@@ -1,11 +1,11 @@
 __author__ = 'InfSub'
 __contact__ = 'https:/t.me/InfSub'
 __copyright__ = 'Copyright (C) 2025, [LegioNTeaM] InfSub'
-__date__ = '2025/04/27'
+__date__ = '2025/04/28'
 __deprecated__ = False
 __maintainer__ = 'InfSub'
 __status__ = 'Production'  # 'Production / Development'
-__version__ = '1.7.1'
+__version__ = '1.7.4'
 
 from sys import platform
 from subprocess import check_call
@@ -18,21 +18,37 @@ MAIN_SCRIPT = "run_bot"
 REQUIREMENTS_FILE = 'requirements.txt'
 VENV_PATH = '.venv'
 VENV_INDIVIDUAL = False if getlogin().lower() == __maintainer__.lower() else True
-LOG_FORMAT = '%(filename)s:%(lineno)d\n%(asctime)-24s| %(levelname)-8s| %(name)-8s\t| %(funcName)-28s| %(message)s'
+LOG_FORMAT = '%(filename)s:%(lineno)d\n%(asctime)-20s| %(levelname)-8s| %(name)-20s\t| %(funcName)-20s| %(message)s'
+LOG_DATE_FORMAT = '%Y.%m.%d %H:%M:%S'
 LOG_LANGUAGE = 'en'  # en / ru
-LOG_MESSAGE = {'venv_create': {'en': f'Creating a virtual environment in directory "{{path}}"...',
-    'ru': f'Создаем виртуальное окружение в каталоге "{{path}}"...', },
-    'venv_exists': {'en': f'Virtual environment already exists in directory "{{path}}".',
-        'ru': f'Виртуальное окружение уже существует в каталоге "{{path}}".', },
-    'requirements': {'en': 'Installing dependencies (requirements)...', 'ru': 'Устанавливаем зависимости...', },
-    'run_script': {'en': f'Running script "{{file}}"...', 'ru': f'Запускаем скрипт "{{file}}"...', },
-    'task_cancelled': {'en': 'Task was cancelled.', 'ru': 'Задание отменено', },
-    'dir_not_found': {'en': f'Directory "{{path}}" not found!', 'ru': f'Каталог "{{path}}" не найден!', },
+LOG_MESSAGE = {
+    'venv_create': {
+        'en': f'Creating a virtual environment in directory "{{path}}"...',
+    'ru': f'Создаем виртуальное окружение в каталоге "{{path}}"...',
+    },
+    'venv_exists': {
+        'en': f'Virtual environment already exists in directory "{{path}}".',
+        'ru': f'Виртуальное окружение уже существует в каталоге "{{path}}".',
+    },
+    'requirements': {
+        'en': 'Installing dependencies (requirements)...', 'ru': 'Устанавливаем зависимости...',
+    },
+    'run_script': {
+        'en': f'Running script "{{file}}"...', 'ru': f'Запускаем скрипт "{{file}}"...',
+    },
+    'task_cancelled': {
+        'en': 'Task was cancelled.', 'ru': 'Задание отменено',
+    },
+    'dir_not_found': {
+        'en': f'Directory "{{path}}" not found!', 'ru': f'Каталог "{{path}}" не найден!',
+    },
     'file_not_found': {'en': f'File "{{file}}" not found: {{error}}.',
-        'ru': f'Файл "{{file}}" не найден: {{error}}.', }, }
+        'ru': f'Файл "{{file}}" не найден: {{error}}.',
+    },
+}
 
 # Настройка логирования
-logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
+logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, datefmt=LOG_DATE_FORMAT)
 
 
 def create_virtual_environment(venv_dir: str) -> None:
@@ -87,7 +103,7 @@ def create_venv() -> None:
     
     if exists(venv_bin_path):
         install_dependencies(venv_dir=venv_bin_path, requirements_file=REQUIREMENTS_FILE)
-        run_main_script(venv_dir=venv_bin_path, script_name=f'{MAIN_SCRIPT}'.py)
+        run_main_script(venv_dir=venv_bin_path, script_name=f'{MAIN_SCRIPT}.py')
     else:
         logging.error(LOG_MESSAGE.get('dir_not_found').get(LOG_LANGUAGE, 'en').format(path=venv_bin_path))
 
