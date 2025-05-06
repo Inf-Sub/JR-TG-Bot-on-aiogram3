@@ -1,23 +1,23 @@
 __author__ = 'InfSub'
 __contact__ = 'https:/t.me/InfSub'
 __copyright__ = 'Copyright (C) 2025, [LegioNTeaM] InfSub'
-__date__ = '2025/04/28'
+__date__ = '2025/04/30'
 __deprecated__ = False
 __maintainer__ = 'InfSub'
 __status__ = 'Production'  # 'Production / Development'
-__version__ = '1.7.4'
+__version__ = '1.7.6'
 
 from sys import platform
 from subprocess import check_call
 import logging
 from os import getlogin
-from os.path import exists, join
+from os.path import exists, join as os_join
 from venv import create as venv_create
 
+# Константы
 MAIN_SCRIPT = "run_bot"
 REQUIREMENTS_FILE = 'requirements.txt'
 VENV_PATH = '.venv'
-VENV_INDIVIDUAL = False if getlogin().lower() == __maintainer__.lower() else True
 LOG_FORMAT = '%(filename)s:%(lineno)d\n%(asctime)-20s| %(levelname)-8s| %(name)-20s\t| %(funcName)-20s| %(message)s'
 LOG_DATE_FORMAT = '%Y.%m.%d %H:%M:%S'
 LOG_LANGUAGE = 'en'  # en / ru
@@ -51,62 +51,56 @@ LOG_MESSAGE = {
 logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, datefmt=LOG_DATE_FORMAT)
 
 
-def create_virtual_environment(venv_dir: str) -> None:
-    """Создает виртуальное окружение в указанной директории."""
-    if not exists(venv_dir):
-        logging.info(LOG_MESSAGE.get('venv_create').get(LOG_LANGUAGE, 'en').format(path=venv_dir))
-        venv_create(venv_dir, with_pip=True)  # check_call(["python", "-m", "venv", venv_dir])
-    else:
-        logging.warning(LOG_MESSAGE.get('venv_exists').get(LOG_LANGUAGE, 'en').format(path=venv_dir))
-
-
-def install_dependencies(venv_dir: str, requirements_file: str) -> None:
-    """Устанавливает зависимости из файла requirements.txt."""
-    pip_executable = join(venv_dir, 'pip')
-    if platform == "win32":
-        pip_executable += ".exe"
+class VirtualEnvironmentManager:
+    def __init__(self, venv_path: str, individual: bool = True) -> None:
+        self.venv_path = venv_path if not individual else f'{venv_path}_{getlogin()}'
     
-    logging.info(LOG_MESSAGE.get('requirements').get(LOG_LANGUAGE, 'en'))
+    def create_virtual_environment(self) -> None:
+        """Создает виртуальное окружение в указанной директории."""
+        if not exists(self.venv_path):
+            logging.info(LOG_MESSAGE['venv_create'][LOG_LANGUAGE].format(path=self.venv_path))
+            venv_create(self.venv_path, with_pip=True)
+        else:
+            logging.warning(LOG_MESSAGE['venv_exists'][LOG_LANGUAGE].format(path=self.venv_path))
     
-    try:
-        check_call([pip_executable, "install", "-r", requirements_file])
-    except Exception as e:
-        logging.error(LOG_MESSAGE.get('file_not_found').get(LOG_LANGUAGE, 'en').format(file=pip_executable, error=e))
+    def install_dependencies(self) -> None:
+        """Устанавливает зависимости из файла requirements.txt."""
+        pip_executable = os_join(
+            self.venv_path, 'Scripts', 'pip') if platform == "win32" else os_join(self.venv_path, 'bin', 'pip')
+        
+        logging.info(LOG_MESSAGE['requirements'][LOG_LANGUAGE])
+        
+        try:
+            check_call([pip_executable, "install", "-r", REQUIREMENTS_FILE])
+        except Exception as e:
+            logging.error(LOG_MESSAGE['file_not_found'][LOG_LANGUAGE].format(file=pip_executable, error=e))
+    
+    def run_main_script(self) -> None:
+        """Запускает основной скрипт проекта в виртуальном окружении."""
+        python_executable = os_join(
+            self.venv_path, 'Scripts', 'python') if platform == "win32" else os_join(self.venv_path, 'bin', 'python')
 
-
-def run_main_script(venv_dir: str, script_name: str) -> None:
-    """Запускает основной скрипт проекта в виртуальном окружении."""
-    python_executable = join(venv_dir, 'python')
-    if platform == "win32":
-        python_executable += ".exe"
+        try:
+            check_call([python_executable, "-m", "pip", "install", "--upgrade", "pip"])
+            logging.info(LOG_MESSAGE['run_script'][LOG_LANGUAGE].format(file=MAIN_SCRIPT))
+            check_call([python_executable, f'{MAIN_SCRIPT}.py'])
+        except KeyboardInterrupt:
+            logging.error(LOG_MESSAGE['task_cancelled'][LOG_LANGUAGE])
+        except Exception as e:
+            logging.error(LOG_MESSAGE['file_not_found'][LOG_LANGUAGE].format(file=python_executable, error=e))
     
-    try:
-        check_call([python_executable, "-m", "pip", "install", "--upgrade", "pip"])
-    except Exception as e:
-        logging.error(LOG_MESSAGE.get('file_not_found').get(LOG_LANGUAGE, 'en').format(file=python_executable, error=e))
-    
-    try:
-        logging.info(LOG_MESSAGE.get('run_script').get(LOG_LANGUAGE, 'en').format(file=script_name))
-        check_call([python_executable, script_name])
-    except KeyboardInterrupt:
-        logging.error(LOG_MESSAGE.get('task_cancelled').get(LOG_LANGUAGE, 'en'))
-    except Exception as e:
-        logging.error(LOG_MESSAGE.get('file_not_found').get(LOG_LANGUAGE, 'en').format(file=python_executable,
-                                                                                       error=e))  # finally:  #     print("Cleanup actions.")
-
-
-def create_venv() -> None:
-    venv_dir_name = VENV_PATH if not VENV_INDIVIDUAL else f'{VENV_PATH}_{getlogin()}'
-    
-    create_virtual_environment(venv_dir=venv_dir_name)
-    venv_bin_path = join(venv_dir_name, 'Scripts')
-    
-    if exists(venv_bin_path):
-        install_dependencies(venv_dir=venv_bin_path, requirements_file=REQUIREMENTS_FILE)
-        run_main_script(venv_dir=venv_bin_path, script_name=f'{MAIN_SCRIPT}.py')
-    else:
-        logging.error(LOG_MESSAGE.get('dir_not_found').get(LOG_LANGUAGE, 'en').format(path=venv_bin_path))
+    def setup(self) -> None:
+        """Запускает процесс создания виртуального окружения и установки зависимостей."""
+        self.create_virtual_environment()
+        if exists(os_join(self.venv_path, 'Scripts')) or exists(os_join(self.venv_path, 'bin')):
+            self.install_dependencies()
+            self.run_main_script()
+        else:
+            logging.error(
+                LOG_MESSAGE['file_not_found'][LOG_LANGUAGE].format(file=self.venv_path, error='Directory not found'))
 
 
 if __name__ == "__main__":
-    create_venv()
+    VENV_INDIVIDUAL = False if getlogin().lower() == __maintainer__.lower() else True
+    manager = VirtualEnvironmentManager(VENV_PATH, VENV_INDIVIDUAL)
+    manager.setup()

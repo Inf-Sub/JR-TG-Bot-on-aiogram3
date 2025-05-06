@@ -9,7 +9,7 @@ __version__ = '0.0.2'
 
 from aiogram import Router
 from aiogram.types import Message
-# from pprint import pprint
+
 from logger import logging
 
 
@@ -21,4 +21,3 @@ all_messages_router = Router()
 async def all_messages(message: Message):
     await message.answer(f'Привет, {message.from_user.full_name}!\nТы прислал мне сообщение: {message.text}')
     logging.debug(f'MISSED MESSAGE: {message}')
-    # pprint(message)

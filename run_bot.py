@@ -7,20 +7,26 @@ __maintainer__ = 'InfSub'
 __status__ = 'Development'  # 'Production / Development'
 __version__ = '0.0.2'
 
+from typing import Dict, Any
+
 from aiogram import Bot, Dispatcher
+from aiogram.enums import ParseMode
+from aiogram.client.default import DefaultBotProperties
 from asyncio import run as async_run
 
 from config import Config
 from handlers import main_router
-from misk import *
+from misk import on_start, on_shutdown
 from logger import logging
 
 
 logging = logging.getLogger(__name__)
 
 async def start_bot() -> None:
-    env: dict = Config().get_config(config_type='tg')
-    bot = Bot(token=env['tg_token'])
+    config: Dict[str, Any] = Config().get_config('tg')
+    bot = Bot(
+        token=config['tg_token'], default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN),
+    )
     dp = Dispatcher()
 
     dp.include_router(main_router)

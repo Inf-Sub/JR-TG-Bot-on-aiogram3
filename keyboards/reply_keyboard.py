@@ -1,0 +1,31 @@
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
+
+
+def rkb_main_menu(buttons):
+    keyboard = ReplyKeyboardBuilder()
+    for button in buttons:
+        keyboard.button(
+            text=button,
+        )
+    return keyboard.as_markup(
+        resize_keyboard=True,
+        input_field_placeholder='Выберите пункт меню...',
+    )
+
+# def rkb_main_menu():
+#     keyboard = ReplyKeyboardBuilder()
+#     buttons = [
+#         '/random',
+#         '/gpt',
+#         '/talk',
+#         '/quiz',
+#     ]
+#     for button in buttons:
+#         keyboard.button(
+#             test=button,
+#         )
+#     return keyboard.as_markup(
+#         resize_keyboard=True,
+#         input_field_placeholder='Выберите пункт меню...',
+#     )
+#
