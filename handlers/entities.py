@@ -21,11 +21,9 @@ entities_router = Router()
 @entities_router.message(F.entities)
 async def catch_entities(message: Message):
     entity_dict = {}
-    logging.debug(f'MESSAGE ENTITIES: {message}')
-    
+    # logging.debug(f'MESSAGE ENTITIES: {message}')
     for entity in message.entities:
         logging.debug(f'ENTITY: {entity}')
-        
         entity_text = message.text[entity.offset:entity.offset + entity.length]
         entity_type = entity.type
         

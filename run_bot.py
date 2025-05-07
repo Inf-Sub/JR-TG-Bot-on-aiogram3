@@ -15,7 +15,7 @@ from aiogram.client.default import DefaultBotProperties
 from asyncio import run as async_run
 
 from config import Config
-from handlers import main_router
+from handlers import routers_list
 from misk import on_start, on_shutdown
 from logger import logging
 
@@ -29,7 +29,8 @@ async def start_bot() -> None:
     )
     dp = Dispatcher()
 
-    dp.include_router(main_router)
+
+    dp.include_routers(*routers_list)
     dp.startup.register(on_start)
     dp.shutdown.register(on_shutdown)
     await dp.start_polling(bot)

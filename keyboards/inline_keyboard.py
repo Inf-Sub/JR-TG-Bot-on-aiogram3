@@ -44,13 +44,13 @@ async def ikb_celebrity() -> InlineKeyboardBuilder:
     
     for file in celebrity_list:
         # Асинхронно читаем содержимое файла
-        logging.gebug(f'Reading celebrity file: "{file}."')
+        logging.debug(f'Reading celebrity file: "{file}."')
         async with aio_open(file, 'r', encoding='UTF-8') as txt_file:
             first_line = await txt_file.readline()
             button_name = await extract_celebrity_name(first_line)  # Извлекаем имя знаменитости
             file_name = file.stem  # Извлекаем имя файла без расширения
             buttons.append((button_name, file_name))
-            logging.gebug(f'Reading celebrity button name: "{button_name}" and file name: {file_name}".')
+            logging.debug(f'Reading celebrity button name: "{button_name}" and file name: {file_name}".')
 
     for button_name, file_name in buttons:
         keyboard.button(text=button_name, callback_data=CelebrityData(button='select_celebrity', file_name=file_name))

@@ -12,7 +12,7 @@ from typing import Dict, Any
 from aiogram import Bot, Router, F
 from aiogram.types import CallbackQuery
 
-from handlers.send import send_photo_and_text
+from handlers.send import send_resource_message
 from keyboards.callback_data import CelebrityData
 
 from config import Config
@@ -29,4 +29,4 @@ async def celebrity_callbacks(callback: CallbackQuery, callback_data: CelebrityD
     prompts_dir = config.get('bot_gpt_prompts_dir')
     file_name = callback_data.file_name
 
-    await send_photo_and_text(bot, callback.from_user.id, file_name, prompts_dir)
+    await send_resource_message(callback, bot, file_name, prompts_dir)

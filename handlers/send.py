@@ -8,9 +8,10 @@ __status__ = 'Development'  # 'Production / Development'
 __version__ = '0.0.3'
 
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Union
 from aiogram import Bot
-from aiogram.types import FSInputFile
+from aiogram.types import Message, CallbackQuery, FSInputFile, ReplyKeyboardMarkup, InlineKeyboardMarkup
+from aiogram.enums import ChatAction
 from pathlib import Path
 from aiofiles import open as aio_open
 
@@ -20,51 +21,71 @@ from logger import logging
 
 logger = logging.getLogger(__name__)
 
-async def send_photo_and_text(
-        bot: Bot, chat_id: int, file_name: str, messages_dir: str = None, images_dir: str = None) -> None:
-    config: Dict[str, Any] = Config().get_config('bot')
 
+async def send_resource_message(
+        message: Union[Message, CallbackQuery], bot: Bot, file_name: str, messages_dir: str = None, images_dir: str = None,
+        caption: Optional[str] = None, use_answer: bool = False, keyboard: Optional[
+            Union[ReplyKeyboardMarkup, InlineKeyboardMarkup]] = None
+) -> None:
+    config: Dict[str, Any] = Config().get_config('bot')
+    chat_id: int = message.from_user.id
+    message_text: Optional[str] = None
+    
+    await bot.send_chat_action(
+        chat_id=chat_id,
+        action=ChatAction.TYPING,
+    )
+    
     if messages_dir is None:
         messages_dir = config.get('bot_messages_dir')
     
     if images_dir is None:
         images_dir = config.get('bot_images_dir')
-
+    
     photo_path = Path(f'{images_dir}/{file_name}.jpg')
     message_path = Path(f'{messages_dir}/{file_name}.txt')
-
+    
     logging.debug(f'Chat id: {chat_id} | File paths: image="{photo_path}", text="{message_path}".')
-
+    
     photo_exists = photo_path.exists()
     text_exists = message_path.exists()
-
-    if not photo_exists and not text_exists:
-        logging.warning(f'Neither photo nor text exists for file name: "{file_name}".')
-        return
-
-    message_text: Optional[str] = None
-    if text_exists:
+    
+    if caption:
+        message_text = caption
+    elif text_exists:
         async with aio_open(message_path, 'r', encoding='UTF-8') as txt_file:
             message_text = await txt_file.read()
 
-    if photo_exists:
-        photo = FSInputFile(photo_path)
-        await bot.send_photo(
-            chat_id=chat_id,
-            photo=photo,
-            caption=message_text if message_text else None,
-        )
-        if not message_text:
-            logging.warning(f'Sent photo without text for file name: "{file_name}".')
-    elif message_text:
-        await bot.send_message(
-            chat_id=chat_id,
-            text=message_text,
-        )
-        logging.warning(f'Sent text without photo for file name: "{file_name}".')
 
+    # Логика отправки сообщений
+    if photo_exists and message_text:
+        # Отправляем и фото, и текст
+        photo = FSInputFile(photo_path)
+        if use_answer:
+            await message.answer_photo(photo=photo, caption=message_text, reply_markup=keyboard)
+        else:
+            await bot.send_photo(chat_id=chat_id, photo=photo, caption=message_text, reply_markup=keyboard)
+    elif photo_exists:
+        # Отправляем только фото
+        photo = FSInputFile(photo_path)
+        if use_answer:
+            await message.answer_photo(photo=photo, reply_markup=keyboard)
+        else:
+            await bot.send_photo(chat_id=chat_id, photo=photo, reply_markup=keyboard)
+            
+    elif message_text:
+        # Отправляем только текст
+        if use_answer:
+            await message.answer_message(text=message_text, reply_markup=keyboard)
+        else:
+            await bot.send_message(chat_id=chat_id, text=message_text, reply_markup=keyboard)
+    else:
+        logging.warning(f'Neither photo nor text exists for file name: "{file_name}".')
+        return
+    
+    # Логирование отсутствующих ресурсов
     if not photo_exists:
         logging.warning(f'Photo does not exist for file name: "{file_name}".')
-
-    if not text_exists:
+    
+    if not text_exists and not caption:
         logging.warning(f'Text does not exist for file name: "{file_name}".')
