@@ -13,7 +13,7 @@ from pathlib import Path
 from aiofiles import open as aio_open
 from typing import List, Tuple, Dict, Any
 
-from keyboards.callback_data import CelebrityData
+from callbacks.callback_data import CelebrityData
 
 from config import Config
 from logger import logging

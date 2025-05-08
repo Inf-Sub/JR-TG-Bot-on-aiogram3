@@ -9,7 +9,7 @@ __version__ = '1.0.4.6'
 
 from os import getenv
 # from os.path import join as os_join
-# from decouple import config
+# from decouple import __config
 from dotenv import load_dotenv
 from datetime import datetime as dt
 import logging
@@ -34,9 +34,9 @@ class Config:
     
     def _load_env(self) -> dict:
         """
-        Загрузка переменных окружения из файла .config.
+        Загрузка переменных окружения из файла .__config.
 
-        :return: Возвращает словарь с параметрами из .config файла.
+        :return: Возвращает словарь с параметрами из .__config файла.
         """
         current_date = self._current_date
         try:
@@ -63,10 +63,10 @@ class Config:
                 # 'DB_FILE_TABLE_PREFIX': getenv('DB_FILE_TABLE_PREFIX'),
                 # 'DB_FILE_INIT_DATA_PREFIX': getenv('DB_FILE_INIT_DATA_PREFIX'),
                 
-                # 'BOT_RESOURCES_DIR': getenv('BOT_RESOURCES_DIR', r'resources'),
-                'BOT_GPT_PROMPTS_DIR': getenv('BOT_GPT_PROMPTS_DIR', r'resources/prompts'),
-                'BOT_MESSAGES_DIR': getenv('BOT_MESSAGES_DIR', r'resources/messages'),
-                'BOT_IMAGES_DIR': getenv('BOT_IMAGES_DIR', r'resources/images'),
+                'BOT_RESOURCES_DIR': getenv('BOT_RESOURCES_DIR', r'resources'),
+                'BOT_GPT_PROMPTS_DIR': getenv('BOT_GPT_PROMPTS_DIR', r'prompts'),
+                'BOT_MESSAGES_DIR': getenv('BOT_MESSAGES_DIR', r'messages'),
+                'BOT_IMAGES_DIR': getenv('BOT_IMAGES_DIR', r'images'),
                 
                 # 'SAVE_DIR': current_date.strftime(getenv('SAVE_DIR', r'SAVE_GPT_QA\%Y\%Y.%m')),
                 # 'SAVE_FILE': current_date.strftime(getenv('SAVE_FILE', 'GPT_QA_%Y.%m.%d_%H.%M.%S.txt')),
@@ -108,7 +108,7 @@ class Config:
     #     :param config_type: Префикс для поиска переменных окружения.
     #     :return: Возвращает словарь с параметрами, соответствующими указанному префиксу.
     #     """
-    #     return {key.lower(): self.config[key] for key in self.config.keys() if key.startswith(config_type.upper() + '_')}
+    #     return {key.lower(): self.__config[key] for key in self.__config.keys() if key.startswith(config_type.upper() + '_')}
 
 
 if __name__ == "__main__":

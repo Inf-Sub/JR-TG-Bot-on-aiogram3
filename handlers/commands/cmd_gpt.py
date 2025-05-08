@@ -10,7 +10,6 @@ __version__ = '0.0.3'
 from aiogram import Bot, Router
 from aiogram.filters import Command
 from aiogram.types import Message
-# from aiogram.enums import ChatAction
 from aiogram.fsm.context import FSMContext
 
 from classes import gpt_client
@@ -37,12 +36,12 @@ async def cmd_gpt(message: Message, bot: Bot, state: FSMContext):
     :param bot: Экземпляр бота.
     :param state: Контекст состояния для управления состоянием бота.
     """
-    await state.set_state(ChatGPTRequests.wait_gpt_request)
+    await state.set_state(ChatGPTRequests.wait_gpt_answer)
     file_name = 'gpt'
     await send_resource_message(message, bot, file_name, use_answer=True)
 
 
-@cmd_gpt_router.message(ChatGPTRequests.wait_gpt_request)
+@cmd_gpt_router.message(ChatGPTRequests.wait_gpt_answer)
 async def wait_for_gpt_handler(message: Message, bot: Bot):
     file_name = 'gpt'
     message_text = await gpt_client.gpt_request(message.text)

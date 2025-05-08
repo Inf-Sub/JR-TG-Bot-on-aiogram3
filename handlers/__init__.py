@@ -5,17 +5,15 @@ __date__ = '2025/04/27'
 __deprecated__ = False
 __maintainer__ = 'InfSub'
 __status__ = 'Development'  # 'Production / Development'
-__version__ = '1.0.0'
-
-from aiogram import Router
+__version__ = '1.0.1'
 
 from handlers.commands.cmd_start import cmd_start_router
 from handlers.commands.cmd_random import cmd_random_router
 from handlers.commands.cmd_talk import cmd_talk_router
 from handlers.commands.cmd_gpt import cmd_gpt_router
 
-from .entities import entities_router
-from .callback_celebrity import callback_celebrity_router
+# from .entities import entities_router
+from callbacks.callback_celebrity import callback_celebrity_router
 # for test
 from .all_messages import all_messages_router
 
@@ -26,7 +24,7 @@ routers_list = [
     cmd_talk_router,
     cmd_gpt_router,
     
-    entities_router,
+    # entities_router,
     callback_celebrity_router,
     # for test
     all_messages_router,

@@ -9,10 +9,10 @@ __version__ = '0.0.4'
 
 
 # try:
-#     from config import Config
-#     print('Модуль "config" успешно импортирован.')
+#     from __config import Config
+#     print('Модуль "__config" успешно импортирован.')
 # except ModuleNotFoundError:
-#     print('Ошибка: Модуль "config" не найден.')
+#     print('Ошибка: Модуль "__config" не найден.')
 # except ImportError as e:
 #     print(f'Ошибка импорта: {e}')
 # import os

@@ -11,6 +11,7 @@ from aiogram import Bot, Router, F
 from aiogram.filters import Command
 from aiogram.types import Message
 from handlers.send import send_resource_message
+
 from keyboards import rkb_main_menu
 
 from logger import logging
@@ -37,4 +38,4 @@ async def cmd_start(message: Message, bot: Bot):
     """
     file_name = 'main'
     buttons = ['/random', '/gpt', '/talk', '/quiz', ]
-    await send_resource_message(message, bot, file_name, keyboard=rkb_main_menu(buttons), use_answer=True)
+    await send_resource_message(message, bot, file_name, keyboard=await rkb_main_menu(buttons), use_answer=True)

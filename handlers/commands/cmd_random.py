@@ -38,5 +38,5 @@ async def cmd_random(message: Message, bot: Bot):
     file_name = 'random'
     buttons = ['Хочу еще факт', 'Закончить', ]
     message_text = await gpt_client.random_request()
-    await send_resource_message(message, bot, file_name, keyboard=rkb_main_menu(buttons), use_answer=True,
+    await send_resource_message(message, bot, file_name, keyboard=await rkb_main_menu(buttons), use_answer=True,
         caption=message_text)

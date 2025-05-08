@@ -29,8 +29,8 @@ async def start_bot() -> None:
     )
     dp = Dispatcher()
 
-
     dp.include_routers(*routers_list)
+
     dp.startup.register(on_start)
     dp.shutdown.register(on_shutdown)
     await dp.start_polling(bot)
