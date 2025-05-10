@@ -14,17 +14,33 @@ from logger import logging
 
 logging = logging.getLogger(__name__)
 
-def on_start():
+def on_start() -> None:
+    """
+    Логирует сообщение о том, что бот запущен.
+
+    :return: None
+    """
     # formatted_date_time = datetime.now().strftime('%Y.%m.%d %H:%M:%S')
     logging.warning(f'Bot is started...')
 
 
-def on_shutdown():
+def on_shutdown() -> None:
+    """
+    Логирует сообщение о том, что бот остановлен.
+
+    :return: None
+    """
     # formatted_date_time = datetime.now().strftime('%Y.%m.%d %H:%M:%S')
     logging.warning(f'Bot is down now...')
 
 
-async def bot_thinking(message: Message):
+async def bot_thinking(message: Message) -> None:
+    """
+    Отправляет действие "печатает" в чат от имени бота.
+
+    :param message: Сообщение, от которого будет отправлено действие.
+    :return: None
+    """
     await message.bot.send_chat_action(
         chat_id=message.from_user.id,
         action=ChatAction.TYPING,

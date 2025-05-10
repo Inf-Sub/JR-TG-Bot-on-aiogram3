@@ -22,13 +22,28 @@ missed_messages_router = Router()
 
 @missed_messages_router.message(Quiz.quiz_select_topic)
 @missed_messages_router.message(Quiz.quiz_wait_press_button)
-async def missed_messages(message: Message):
+async def missed_messages(message: Message) -> None:
+    """
+    Обрабатывает сообщения, когда пользователь выбирает тему викторины или ждет нажатия кнопки.
+
+    :param message: Сообщение от пользователя.
+    :return: None
+    """
     await message.answer(f'{message.from_user.full_name}!\nНажми на кнопку 👆, получишь результат!')
     logging.debug(f'MISSED MESSAGE: {message}')
 
 
 @missed_messages_router.message()
-async def missed_messages(message: Message):
+async def missed_messages_default(message: Message) -> None:
+    """
+    Обрабатывает все остальные сообщения, отправленные пользователем.
+
+    Если пользователь является администратором, отправляет приветствие с текстом сообщения.
+    В противном случае предлагает начать с команды /start.
+
+    :param message: Сообщение от пользователя.
+    :return: None
+    """
     if is_admin(message.from_user.id):
         await message.answer(f'Привет, {message.from_user.full_name}!\nТы прислал мне сообщение: {message.text}')
     else:

@@ -17,7 +17,14 @@ cmd_quiz_router = Router()
 command = 'quiz'
 
 @cmd_quiz_router.message(Command(command))
-async def cmd_quiz(message: Message, state: FSMContext):
+async def cmd_quiz(message: Message, state: FSMContext) -> None:
+    """
+    Обрабатывает команду квиза, устанавливает состояние и отправляет пользователю сообщение с фотографией.
+
+    :param message: Сообщение, содержащее информацию о команде.
+    :param state: Контекст состояния для управления состоянием пользователя.
+    :return: None
+    """
     logging.debug('cmd_quiz')
     await state.set_state(Quiz.quiz_select_topic)
     await bot_thinking(message)

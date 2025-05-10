@@ -12,13 +12,13 @@ cmd_gpt_router = Router()
 command = 'gpt'
 
 @cmd_gpt_router.message(Command(command))
-async def cmd_gpt(message: Message, state: FSMContext):
+async def cmd_gpt(message: Message, state: FSMContext) -> None:
     """
-        Обрабатывает команду /gpt.
+    Обрабатывает команду для общения с ChatGPT, очищает состояние и устанавливает ожидание ответа.
 
-        Устанавливает состояние ожидания запроса от пользователя и отправляет ему заранее
-        заготовленное изображение. Ожидает текстовое сообщение от пользователя для передачи
-        его в ChatGPT.
+    :param message: Сообщение, содержащее информацию о команде.
+    :param state: Контекст состояния для управления состоянием пользователя.
+    :return: None
     """
     await state.clear()
     await state.set_state(ChatGPTRequests.wait_gpt_answer)

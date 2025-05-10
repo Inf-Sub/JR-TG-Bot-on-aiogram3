@@ -1,13 +1,15 @@
 __author__ = 'InfSub'
 __contact__ = 'https:/t.me/InfSub'
 __copyright__ = 'Copyright (C) 2025, [LegioNTeaM] InfSub'
-__date__ = '2025/04/30'
+__date__ = '2025/05/10'
 __deprecated__ = False
 __maintainer__ = 'InfSub'
 __status__ = 'Development'  # 'Production / Development'
-__version__ = '1.0.4.6'
+__version__ = '1.0.4.7'
 
 from os import getenv
+from typing import Dict, Any
+
 # from os.path import join as os_join
 # from decouple import __config
 from dotenv import load_dotenv
@@ -16,14 +18,25 @@ import logging
 
 
 class Config:
+    """Синглтон для загрузки и хранения конфигурации приложения."""
     _instance = None
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs) -> 'Config':
+        """Создает новый экземпляр класса Config, если он еще не создан.
+
+        :param args: Позиционные аргументы.
+        :param kwargs: Именованные аргументы.
+        :return: Экземпляр класса Config.
+        """
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
 
     def __init__(self):
+        """Инициализация экземпляра Config.
+
+        Загружает переменные окружения из файла .env и инициализирует параметры.
+        """
         # Проверяем, инициализирован ли уже экземпляр
         if not hasattr(self, '_initialized'):
             self._initialized = True  # Устанавливаем флаг инициализации
@@ -32,11 +45,11 @@ class Config:
             self._current_date = dt.now()
             self._env = self._load_env()
     
-    def _load_env(self) -> dict:
+    def _load_env(self) -> Dict[str, Any]:
         """
-        Загрузка переменных окружения из файла .__config.
+        Загрузка переменных окружения из файла .env.
 
-        :return: Возвращает словарь с параметрами из .__config файла.
+        :return: Возвращает словарь с параметрами из файла .env.
         """
         current_date = self._current_date
         try:
@@ -91,7 +104,7 @@ class Config:
             logging.error(e)
             exit()
     
-    def get_config(self, *config_types: str) -> dict:
+    def get_config(self, *config_types: str) -> Dict[str, Any]:
         """
         Получение конфигурации по указанным типам.
 
@@ -104,15 +117,6 @@ class Config:
                 {key.lower(): self._env[key] for key in self._env.keys() if key.startswith(config_type.upper() + '_')})
         return result
     
-    # def get_config(self, config_type: str) -> dict:
-    #     """
-    #     Получение конфигурации по указанному типу.
-    #
-    #     :param config_type: Префикс для поиска переменных окружения.
-    #     :return: Возвращает словарь с параметрами, соответствующими указанному префиксу.
-    #     """
-    #     return {key.lower(): self.__config[key] for key in self.__config.keys() if key.startswith(config_type.upper() + '_')}
-
 
 if __name__ == "__main__":
     from pprint import pprint

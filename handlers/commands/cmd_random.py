@@ -16,8 +16,14 @@ cmd_random_router = Router()
 command = 'random'
 
 @cmd_random_router.message(Command(command))
-# @cmd_random_router.message(Random.quiz_wait_for_answer, F.text == 'Хочу еще факт')
-async def cmd_random(message: Message, state: FSMContext):
+async def cmd_random(message: Message, state: FSMContext) -> None:
+    """
+    Обрабатывает команду для получения случайного факта и устанавливает состояние ожидания ответа.
+
+    :param message: Сообщение, содержащее информацию о команде.
+    :param state: Контекст состояния для управления состоянием пользователя.
+    :return: None
+    """
     await state.set_state(Random.wait_gpt_answer)
     await bot_thinking(message)
     await msg_random_next_handler(message, state)

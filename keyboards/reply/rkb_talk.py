@@ -1,7 +1,13 @@
+from aiogram.types import ReplyKeyboardMarkup
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 
-def rkb_talk_end():
+def rkb_talk_end() -> ReplyKeyboardMarkup:
+    """
+    Создает клавиатуру для завершения разговора.
+
+    :return: Настроенная клавиатура с кнопкой для прощания.
+    """
     keyboard = ReplyKeyboardBuilder()
     keyboard.button(
         text='Попрощаться!',

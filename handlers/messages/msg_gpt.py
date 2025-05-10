@@ -14,7 +14,14 @@ msg_gpt_router = Router()
 command = 'gpt'
 
 @msg_gpt_router.message(ChatGPTRequests.wait_gpt_answer)
-async def msg_gpt_handler(message: Message, state: FSMContext):
+async def msg_gpt_handler(message: Message, state: FSMContext) -> None:
+    """
+    Обрабатывает сообщения, ожидая ответ от ChatGPT. Устанавливает состояние ожидания и обновляет данные состояния.
+
+    :param message: Сообщение, содержащее текст от пользователя.
+    :param state: Контекст состояния для управления состоянием пользователя.
+    :return: None
+    """
     await bot_thinking(message)
     await state.set_state(ChatGPTRequests.wait_gpt_answer)
 

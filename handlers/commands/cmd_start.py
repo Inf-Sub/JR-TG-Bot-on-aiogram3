@@ -17,7 +17,13 @@ command = 'main'
 @cmd_start_router.message(Command('help'))
 # @cmd_start_router.message(F.text == 'Закончить')
 # @cmd_start_router.message(F.text == 'Попрощаться!')
-async def cmd_start(message: Message):
+async def cmd_start(message: Message) -> None:
+    """
+    Обрабатывает команду запуска и отправляет пользователю приветственное сообщение с кнопками меню.
+
+    :param message: Сообщение, содержащее информацию о команде.
+    :return: None
+    """
     resource = Resource(command)
     # Дожидаемся выполнения метода as_kwargs
     buttons = ['/random', '/gpt', '/talk', '/quiz', ]

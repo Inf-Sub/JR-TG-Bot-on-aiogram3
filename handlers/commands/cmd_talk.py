@@ -13,7 +13,15 @@ cmd_talk_router = Router()
 command = 'talk'
 
 @cmd_talk_router.message(Command(command))
-async def cmd_talk(message: Message, state: FSMContext):
+async def cmd_talk(message: Message, state: FSMContext) -> None:
+    """
+    Обрабатывает команду общения со знаменитостью, устанавливает состояние ожидания ответа и отправляет пользователю
+    сообщение с фотографией.
+
+    :param message: Сообщение, содержащее информацию о команде.
+    :param state: Контекст состояния для управления состоянием пользователя.
+    :return: None
+    """
     await state.set_state(TalkWithCelebrity.wait_gpt_answer)
     await bot_thinking(message)
     resource = Resource(command)

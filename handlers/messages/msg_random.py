@@ -16,7 +16,14 @@ logging = logging.getLogger(__name__)
 msg_random_router = Router()
 
 @msg_random_router.message(Random.wait_gpt_answer, F.text == 'Хочу еще факт')
-async def msg_random_next_handler(message: Message, state: FSMContext):
+async def msg_random_next_handler(message: Message, state: FSMContext) -> None:
+    """
+    Обрабатывает запрос на получение следующего факта.
+
+    :param message: Сообщение от пользователя, содержащее запрос.
+    :param state: Контекст состояния для управления состоянием пользователя.
+    :return: None
+    """
     current_state = await state.get_state()
     if current_state is None:
         await state.set_state(Random.wait_gpt_answer)
@@ -37,7 +44,14 @@ async def msg_random_next_handler(message: Message, state: FSMContext):
     )
 
 @msg_random_router.message(Random.wait_gpt_answer, F.text == 'Закончить')
-async def msg_random_end_handler(message: Message, state: FSMContext):
+async def msg_random_end_handler(message: Message, state: FSMContext) -> None:
+    """
+    Завершает сессию и очищает состояние пользователя.
+
+    :param message: Сообщение от пользователя, содержащее запрос на завершение.
+    :param state: Контекст состояния для управления состоянием пользователя.
+    :return: None
+    """
     await bot_thinking(message)
     await state.clear()
     await cmd_start(message)

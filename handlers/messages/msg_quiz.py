@@ -14,36 +14,31 @@ from misc import bot_thinking
 
 from logger import logging
 
+
 logging = logging.getLogger(__name__)
 
 msg_quiz_router = Router()
 
 @msg_quiz_router.message(Quiz.quiz_wait_for_answer)
-async def msg_quiz_answer_handler(message: Message, state: FSMContext):
-    logging.debug('msg_quiz_answer_handler')
+async def msg_quiz_answer_handler(message: Message, state: FSMContext) -> None:
+    """
+    Обрабатывает ответ на вопрос викторины, обновляет состояние и отправляет пользователю результат.
+
+    :param message: Сообщение, содержащее ответ пользователя.
+    :param state: Контекст состояния для управления состоянием пользователя.
+    :return: None
+    """
     await bot_thinking(message)
     await state.set_state(Quiz.quiz_wait_for_answer)
     
-    # user_id = message.from_user.id
     current_state = await state.get_data()
-    # if not current_state:
-    #     logging.warning(f'State is not set. Handler will not be executed.')
-    #     await message.bot.send_message(
-    #         chat_id=user_id,
-    #         text='Выберите тему в меню выше 👆 или начните тестирование снова: /quiz.\n'
-    #              'Или воспользуйтесь меню по команде:\n/start',
-    #     )
-    #     await state.clear()
-    #     return
 
     data: Dict[str, GPTMessage | QuizData | str | int] = current_state
     data['messages'].update(GPTRole.USER, message.text)
 
     gpt_client = ChatGPT()
     response = await gpt_client.request(data['messages'])
-    
-    # logging.debug(
-    #     f'{response=} | {'Правильно!'.lower() in response.lower()} | {'неправильно!'.lower() not in response.lower()}')
+
     data['total'] += 1
     if 'Правильно!'.lower() in response.lower() and 'неправильно!'.lower() not in response.lower():
         data['score'] += 1
@@ -62,18 +57,3 @@ async def msg_quiz_answer_handler(message: Message, state: FSMContext):
     )
 
     await state.set_state(Quiz.quiz_wait_press_button)
-
-
-# @msg_quiz_router.message(Quiz.quiz_wait_for_answer)
-# async def msg_quiz_select_theme_handler(message: Message, state: FSMContext):
-#     await bot_thinking(message)
-#     await state.set_state(Quiz.quiz_wait_for_answer)
-#
-#     user_id = message.from_user.id
-#     current_state = await state.get_data()
-#     if not current_state:
-#         logging.warning(f'State is not set. Handler will not be executed.')
-#         await message.bot.send_message(chat_id=user_id,
-#             text='Выберите тему в меню выше 👆 или начните тестирование снова: /quiz.\n'
-#                  'Или воспользуйтесь меню по команде:\n/start', )
-#         await state.clear()

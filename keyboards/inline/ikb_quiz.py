@@ -1,5 +1,6 @@
 from typing import List
 
+from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from classes.bot_bottons import Button, Buttons
@@ -10,7 +11,12 @@ from logger import logging
 
 logging = logging.getLogger(__name__)
 
-def ikb_quiz_select_topic():
+def ikb_quiz_select_topic() -> InlineKeyboardMarkup:
+    """
+    Создает клавиатуру для выбора темы викторины.
+
+    :return: Настроенная клавиатура с кнопками выбора тем.
+    """
     logging.debug('ikb_quiz_select_topic')
     keyboard = InlineKeyboardBuilder()
     buttons_quiz_themes: List[Button] = [
@@ -35,7 +41,13 @@ def ikb_quiz_select_topic():
     return keyboard.as_markup()
 
 
-def ikb_quiz_next(current_topic: QuizData):
+def ikb_quiz_next(current_topic: QuizData) -> InlineKeyboardMarkup:
+    """
+    Создает клавиатуру для перехода к следующему вопросу викторины.
+
+    :param current_topic: Данные о текущей теме викторины.
+    :return: Настроенная клавиатура с действиями для викторины.
+    """
     logging.debug('ikb_quiz_next')
     keyboard = InlineKeyboardBuilder()
     buttons_quiz_actions = [

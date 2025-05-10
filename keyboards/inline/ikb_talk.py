@@ -1,3 +1,4 @@
+from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from classes import Buttons
@@ -8,7 +9,11 @@ from logger import logging
 
 logging = logging.getLogger(__name__)
 
-def ikb_talk_with_celebrity():
+def ikb_talk_with_celebrity() -> InlineKeyboardMarkup:
+    """Создает клавиатуру для взаимодействия с выбранной знаменитостью.
+
+    :return: Настроенная клавиатура с кнопками для общения со знаменитостью.
+    """
     keyboard = InlineKeyboardBuilder()
     buttons = Buttons()
     for button in buttons:

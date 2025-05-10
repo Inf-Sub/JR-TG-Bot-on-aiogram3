@@ -20,7 +20,14 @@ logging = logging.getLogger(__name__)
 msg_talk_router = Router()
 
 @msg_talk_router.message(TalkWithCelebrity.wait_gpt_answer, F.text != 'Попрощаться!')
-async def msg_talk_handler(message: Message, state: FSMContext):
+async def msg_talk_handler(message: Message, state: FSMContext) -> None:
+    """
+    Обрабатывает сообщения пользователя во время разговора со знаменитостью.
+
+    :param message: Сообщение от пользователя, содержащее текст для отправки.
+    :param state: Контекст состояния для управления состоянием пользователя.
+    :return: None
+    """
     await bot_thinking(message)
 
     user_id = message.from_user.id
@@ -53,7 +60,14 @@ async def msg_talk_handler(message: Message, state: FSMContext):
     )
 
 @msg_talk_router.message(TalkWithCelebrity.wait_gpt_answer, F.text == 'Попрощаться!')
-async def msg_talk_end_handler(message: Message, state: FSMContext):
+async def msg_talk_end_handler(message: Message, state: FSMContext) -> None:
+    """
+    Завершает разговор со знаменитостью и очищает состояние пользователя.
+
+    :param message: Сообщение от пользователя, содержащее запрос на завершение разговора.
+    :param state: Контекст состояния для управления состоянием пользователя.
+    :return: None
+    """
     await bot_thinking(message)
     await state.clear()
     await cmd_start(message)
