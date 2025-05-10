@@ -1,4 +1,3 @@
-from pprint import pprint
 from typing import List
 
 from aiogram.utils.keyboard import InlineKeyboardBuilder
@@ -59,5 +58,3 @@ def ikb_quiz_next(current_topic: QuizData):
         )
     keyboard.adjust(2, 1)
     return keyboard.as_markup()
-
-

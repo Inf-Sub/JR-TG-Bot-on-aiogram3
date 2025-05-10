@@ -8,7 +8,6 @@ from handlers.commands import cmd_start
 from keyboards.reply import rkb_main_menu
 
 from misc import bot_thinking
-
 from logger import logging
 
 

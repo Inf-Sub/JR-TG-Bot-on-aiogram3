@@ -19,12 +19,12 @@ logging = logging.getLogger(__name__)
 callback_quiz_router = Router()
 command = 'quiz'
 
-@callback_quiz_router.callback_query(QuizData.filter(F.button == 'select_topic'))
+@callback_quiz_router.callback_query(Quiz.quiz_select_topic, QuizData.filter(F.button == 'select_topic'))
 async def quiz_callbacks(callback: CallbackQuery, callback_data: QuizData, state: FSMContext) -> None:
-    logging.debug('quiz_callbacks')
     await callback.answer()
+    # await state.set_state(Quiz.quiz_select_topic)
     # await state.clear()
-    await state.set_state(Quiz.wait_gpt_answer)
+    await state.set_state(Quiz.quiz_wait_for_answer)
 
     logging.debug(f'Received callback: "{callback.data}".')
     
@@ -37,42 +37,42 @@ async def quiz_callbacks(callback: CallbackQuery, callback_data: QuizData, state
     request_message.update(GPTRole.USER, callback_data.topic)
     
     data: Dict[str, GPTMessage | QuizData | str | int] = {
-        'messages': request_message, 'photo': photo, 'score': 0, 'callback': callback_data}
+        'messages': request_message, 'photo': photo, 'score': 0, 'total': 0, 'callback': callback_data}
     
     gpt_client = ChatGPT()
     response = await gpt_client.request(data['messages'])
     data['messages'].update(GPTRole.ASSISTANT, response)
+    await state.set_data(data)
 
     # print(f'quiz_callbacks:\n{callback_data=}\n\n{request_message=}\n\n{data=}\n\n{response=}\n\n{'='*40}')
 
     await callback.bot.send_photo(
         chat_id=callback.from_user.id,
         photo=photo,
-        caption=f'Ваш счет: {data['score']}\n{response}',
+        caption=f'Ваш счет: {data['score']}/{data['total']}\n{response}',
     )
     # await callback.bot.send_message(
     #     chat_id=callback.from_user.id,
     #     text=f'*QUIZ: Тема: {callback_data.topic_name}*\n\n{response}',
     # )
     
-    await state.set_data(data)
+    # await state.set_state(Quiz.quiz_wait_for_answer)
 
 
-@callback_quiz_router.callback_query(QuizData.filter(F.button == 'next_question'))
+@callback_quiz_router.callback_query(Quiz.quiz_wait_press_button, QuizData.filter(F.button == 'next_question'))
 async def quiz_next_question(callback: CallbackQuery, state: FSMContext) -> None:
-    logging.debug('quiz_next_question')
     await callback.answer()
-    await state.set_state(Quiz.wait_gpt_answer)
+    await state.set_state(Quiz.quiz_wait_for_answer)
 
     user_id = callback.from_user.id
     current_state = await state.get_data()
-    if not current_state:
-        logging.warning(f'State is not set. Handler will not be executed. Callback: "{callback.data}".')
-        await callback.bot.send_message(
-            chat_id=user_id,
-            text=f'Извините, что-то пошло не так, начните Quiz сначала: /{command} или выберите другой раздел: /start',
-        )
-        return
+    # if not current_state:
+    #     logging.warning(f'State is not set. Handler will not be executed. Callback: "{callback.data}".')
+    #     await callback.bot.send_message(
+    #         chat_id=user_id,
+    #         text=f'Извините, что-то пошло не так, начните Quiz сначала: /{command} или выберите другой раздел: /start',
+    #     )
+    #     return
 
     data: Dict[str, GPTMessage | QuizData | str | int] = current_state
     data['messages'].update(GPTRole.USER, 'quiz_more')
@@ -80,6 +80,8 @@ async def quiz_next_question(callback: CallbackQuery, state: FSMContext) -> None
     gpt_client = ChatGPT()
     response = await gpt_client.request(data['messages'])
     data['messages'].update(GPTRole.ASSISTANT, response)
+    await state.update_data(data)
+
     try:
         await callback.bot.send_photo(
             chat_id=user_id,
@@ -90,17 +92,10 @@ async def quiz_next_question(callback: CallbackQuery, state: FSMContext) -> None
     except Exception as e:
         logging.debug(f'{user_id=} | {data['photo']=} | {response=}.')
         logging.error(f'Failed to send photo: {e}')
-    # pretty_print(data)
-
-    # await callback.bot.send_message(
-    #     chat_id=user_id,
-    #     text=response,
-    # )
 
     await callback.answer(
         text=f'Продолжаем тему {data['callback'].topic_name}'
     )
-    await state.update_data(data)
    
 
 @callback_quiz_router.callback_query(QuizData.filter(F.button == 'change_topic'))
@@ -110,7 +105,7 @@ async def quiz_change_topic(callback: CallbackQuery, state: FSMContext) -> None:
     message = callback.message
     await bot_thinking(message)
     await state.clear()
-    await cmd_quiz(message)
+    await cmd_quiz(message, state)
    
 
 @callback_quiz_router.callback_query(QuizData.filter(F.button == 'finish_quiz'))

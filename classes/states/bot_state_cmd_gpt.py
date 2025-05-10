@@ -14,4 +14,6 @@ class TalkWithCelebrity(StatesGroup):
 
 
 class Quiz(StatesGroup):
-    wait_gpt_answer = State()
+    quiz_select_topic = State()
+    quiz_wait_for_answer = State()
+    quiz_wait_press_button = State()
