@@ -16,7 +16,7 @@ from asyncio import run as async_run
 
 from config import Config
 from handlers import routers_list
-from misk import on_start, on_shutdown
+from misc import on_start, on_shutdown
 from logger import logging
 
 
@@ -33,6 +33,10 @@ async def start_bot() -> None:
 
     dp.startup.register(on_start)
     dp.shutdown.register(on_shutdown)
+    
+    about_bot = await bot.me()
+    logging.warning(
+        'Run polling for bot: @%s. ID: %d. Bot name: %r', about_bot.username, bot.id, about_bot.full_name)
     await dp.start_polling(bot)
 
 

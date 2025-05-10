@@ -1,18 +1,17 @@
 __author__ = 'InfSub'
 __contact__ = 'https:/t.me/InfSub'
 __copyright__ = 'Copyright (C) 2025, [LegioNTeaM] InfSub'
-__date__ = '2025/05/01'
+__date__ = '2025/05/09'
 __deprecated__ = False
 __maintainer__ = 'InfSub'
 __status__ = 'Development'  # 'Production / Development'
-__version__ = '1.0.4.9'
+__version__ = '1.0.4.12'
 
 import logging
-import logging.config
+from logging import config as logging_config
 from colorlog import ColoredFormatter
 from pathlib import Path
 from typing import List, Optional, Dict, Any
-from os.path import join as os_join
 from datetime import datetime as dt
 
 from config import Config
@@ -33,15 +32,17 @@ def setup_logger(log_path: Optional[str] = None) -> Optional[str]:
     log_level_root: str = config.get('log_level_root', 'INFO')
     log_format_console: str = config.get('log_format_console')
     log_format_file: str = config.get('log_format_file')
+    # Преобразуем строку в список, удаляя пустые значения
+    log_ignore_list: List[str] = [item.strip() for item in config.get('log_ignore_list', '').split(',') if item.strip()]
     log_date_format: str = config.get('log_date_format')
     log_console_language: str = config.get('log_console_language')
     log_dir: str = config.get('log_dir', r'logs\%Y\%Y.%m')
     log_file: str = config.get('log_file', 'backup_log_%Y.%m.%d.log')
     
     if log_path is None:
-        log_path = os_join(log_dir, log_file)
-        
-    log_path = dt.now().strftime(log_path)
+        log_path = Path(log_dir, log_file)
+
+    log_path = dt.now().strftime(str(log_path))
     
     try:
         log_dir = Path(log_path).parent
@@ -56,7 +57,7 @@ def setup_logger(log_path: Optional[str] = None) -> Optional[str]:
         return None
     
     try:
-        logging.config.dictConfig(
+        logging_config.dictConfig(
             {
                 'version': 1, 'disable_existing_loggers': False,
                 'formatters': {
@@ -102,9 +103,9 @@ def setup_logger(log_path: Optional[str] = None) -> Optional[str]:
         logging.error(f'Error configuring logging: {e}')
         return None
     
-    log_ignore_list: List[str] = [
-        # 'smbprotocol'
-    ]
+    # log_ignore_list: List[str] = [
+    #     # 'ignored element'
+    # ]
     
     for logger_name in log_ignore_list:
         logging.getLogger(logger_name).setLevel(logging.WARNING)

@@ -5,7 +5,11 @@ class ChatGPTRequests(StatesGroup):
     wait_gpt_answer = State()
 
 
-class CelebrityTalk(StatesGroup):
+class Random(StatesGroup):
+    wait_gpt_answer = State()
+
+
+class TalkWithCelebrity(StatesGroup):
     wait_gpt_answer = State()
 
 

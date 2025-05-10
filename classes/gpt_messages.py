@@ -1,25 +1,21 @@
-from pathlib import Path
-from classes.bot_path import BotPath
-from classes.gpt_roles import GPTRole
+from typing import List, Dict
+
+from classes import Resource
+from classes.enums import GPTRole
 
 
 class GPTMessage:
     def __init__(self, prompt: str):
-        self.prompt_file = prompt + '.txt'
+        self.prompt = prompt
         self.message_list = self._init_message()
 
-    def _init_message(self) -> list[dict[str, str]]:
+    def _init_message(self) -> List[Dict[str, str]]:
+        content = Resource(self.prompt).prompt
         message = {
             'role': GPTRole.SYSTEM.value,
-            'content': self._load_prompt(),
+            'content': content,
         }
         return [message]
-
-    def _load_prompt(self) -> str:
-        prompt_path = Path(BotPath.PROMPTS.value, self.prompt_file)
-        with open(prompt_path, 'r', encoding='UTF-8') as file:
-            prompt = file.read()
-        return prompt
 
     def update(self, role: GPTRole, message: str):
         message = {
@@ -27,3 +23,12 @@ class GPTMessage:
             'content': message,
         }
         self.message_list.append(message)
+    
+    def __str__(self):
+        return f'GPTMessage(prompt="{self.prompt}", messages={self.message_list})'
+
+    def __repr__(self):
+        # return f'GPTMessage(prompt="{self.prompt}", message_list={self.message_list!r})'
+        messages_repr = ",\n".join(
+            [f"{{'role': '{msg['role']}', 'content': '{msg['content']}'}}" for msg in self.message_list])
+        return f'GPTMessage(prompt="{self.prompt}", message_list=[\n{messages_repr}\n])'

@@ -4,22 +4,27 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from classes import Resource
-from classes.states import TalkWithCelebrity
-from keyboards.inline import ikb_talk_with_celebrity
+from classes.states import Quiz
+from keyboards.inline import ikb_quiz_select_topic
 from misc import bot_thinking
 
+from logger import logging
 
-cmd_talk_router = Router()
-command = 'talk'
 
-@cmd_talk_router.message(Command(command))
-async def cmd_talk(message: Message, state: FSMContext):
-    await state.set_state(TalkWithCelebrity.wait_gpt_answer)
+logging = logging.getLogger(__name__)
+
+cmd_quiz_router = Router()
+command = 'quiz'
+
+@cmd_quiz_router.message(Command(command))
+async def cmd_quiz(message: Message, state: FSMContext):
+    logging.debug('cmd_quiz')
+    await state.set_state(Quiz.wait_gpt_answer)
     await bot_thinking(message)
     resource = Resource(command)
     await message.answer_photo(
         **resource.as_kwargs(),
-        reply_markup=ikb_talk_with_celebrity(),
+        reply_markup=ikb_quiz_select_topic(),
     )
 
 

@@ -9,18 +9,18 @@ __version__ = '0.0.3'
 
 
 from typing import Dict, Any, Optional, Union
+from aiofiles import open as aio_open
+from pathlib import Path
+
 from aiogram import Bot
 from aiogram.types import Message, CallbackQuery, FSInputFile, ReplyKeyboardMarkup, InlineKeyboardMarkup
 from aiogram.enums import ChatAction
-from pathlib import Path
-from aiofiles import open as aio_open
 
 from config import Config
 from logger import logging
 
 
-logger = logging.getLogger(__name__)
-
+logging = logging.getLogger(__name__)
 
 async def send_resource_message(
         message: Union[Message, CallbackQuery], bot: Bot, file_name: str, messages_dir: str = None, images_dir: str = None,

@@ -26,11 +26,11 @@ class Config:
     def __init__(self):
         # Проверяем, инициализирован ли уже экземпляр
         if not hasattr(self, '_initialized'):
+            self._initialized = True  # Устанавливаем флаг инициализации
             logging.info('Загрузка переменных окружения из файла .env')
             load_dotenv()
             self._current_date = dt.now()
             self._env = self._load_env()
-            self._initialized = True  # Устанавливаем флаг инициализации
     
     def _load_env(self) -> dict:
         """
@@ -63,10 +63,12 @@ class Config:
                 # 'DB_FILE_TABLE_PREFIX': getenv('DB_FILE_TABLE_PREFIX'),
                 # 'DB_FILE_INIT_DATA_PREFIX': getenv('DB_FILE_INIT_DATA_PREFIX'),
                 
-                'BOT_RESOURCES_DIR': getenv('BOT_RESOURCES_DIR', r'resources'),
-                'BOT_GPT_PROMPTS_DIR': getenv('BOT_GPT_PROMPTS_DIR', r'prompts'),
-                'BOT_MESSAGES_DIR': getenv('BOT_MESSAGES_DIR', r'messages'),
-                'BOT_IMAGES_DIR': getenv('BOT_IMAGES_DIR', r'images'),
+                'BOT_ADMINS_LIST': getenv('BOT_ADMINS_LIST', ''),
+                
+                'FOLDERS_RESOURCES_DIR': getenv('FOLDERS_RESOURCES_DIR', r'resources'),
+                'FOLDERS_GPT_PROMPTS_DIR': getenv('FOLDERS_GPT_PROMPTS_DIR', r'prompts'),
+                'FOLDERS_MESSAGES_DIR': getenv('FOLDERS_MESSAGES_DIR', r'messages'),
+                'FOLDERS_IMAGES_DIR': getenv('FOLDERS_IMAGES_DIR', r'images'),
                 
                 # 'SAVE_DIR': current_date.strftime(getenv('SAVE_DIR', r'SAVE_GPT_QA\%Y\%Y.%m')),
                 # 'SAVE_FILE': current_date.strftime(getenv('SAVE_FILE', 'GPT_QA_%Y.%m.%d_%H.%M.%S.txt')),
@@ -79,6 +81,7 @@ class Config:
                 'LOG_LEVEL_ROOT': getenv('LOG_LEVEL_ROOT', 'INFO').upper(),
                 'LOG_LEVEL_CONSOLE': getenv('LOG_LEVEL_CONSOLE', 'INFO').upper(),
                 'LOG_LEVEL_FILE': getenv('LOG_LEVEL_FILE', 'WARNING').upper(),
+                'LOG_IGNORE_LIST': getenv('LOG_IGNORE_LIST', ''),
                 'LOG_FORMAT_CONSOLE': getenv('LOG_FORMAT_CONSOLE').replace(r'\t', '\t').replace(r'\n', '\n'),
                 'LOG_FORMAT_FILE': getenv('LOG_FORMAT_FILE').replace(r'\t', '\t').replace(r'\n', '\n'),
                 'LOG_DATE_FORMAT': getenv('LOG_DATE_FORMAT', '%Y.%m.%d %H:%M:%S'),  # Default: None

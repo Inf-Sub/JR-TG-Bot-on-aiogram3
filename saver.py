@@ -17,7 +17,7 @@ from aiofiles import open as aio_open
 from config import Config
 from logger import logging
 
-logger = logging.getLogger(__name__)
+logging = logging.getLogger(__name__)
 
 
 class AsyncFileSaver:

@@ -18,7 +18,8 @@ from venv import create as venv_create
 MAIN_SCRIPT = "run_bot"
 REQUIREMENTS_FILE = 'requirements.txt'
 VENV_PATH = '.venv'
-LOG_FORMAT = '%(filename)s:%(lineno)d\n%(asctime)-20s| %(levelname)-8s| %(name)-20s\t| %(funcName)-20s| %(message)s'
+# LOG_FORMAT = '%(filename)s:%(lineno)d\n%(asctime)-20s| %(levelname)-8s| %(name)-40s| %(funcName)-25s| %(message)s'
+LOG_FORMAT = '%(filename)s:%(lineno)d\n\t| %(asctime)-20s| %(levelname)-8s| %(name)-40s| %(funcName)-25s|\n\t| %(message)s'
 LOG_DATE_FORMAT = '%Y.%m.%d %H:%M:%S'
 LOG_LANGUAGE = 'en'  # en / ru
 LOG_MESSAGE = {

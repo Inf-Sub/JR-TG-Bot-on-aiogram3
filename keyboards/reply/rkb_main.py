@@ -1,7 +1,7 @@
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 
-async def rkb_main_menu(buttons):
+def rkb_main_menu(buttons):
     keyboard = ReplyKeyboardBuilder()
     for button in buttons:
         keyboard.button(
